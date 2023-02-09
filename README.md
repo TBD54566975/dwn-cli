@@ -13,7 +13,9 @@ This can be used for DID to DID messaging/communication from the command line. A
 
 It's a command line (you can read through the JS if you wanted to make it a web app)
 
-```./bin/heyo
+```
+./bin/heyo
+
 Options:
   -V, --version   output the version number
   -h, --help      display help for command
