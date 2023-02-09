@@ -43,7 +43,7 @@ And then put in the did of the person you want to send a message to.
 
 To read any conversations: 
 
-`./bin/heyo show conversations`
+`./bin/heyo show convo`
 
 ## Interesting code
 
