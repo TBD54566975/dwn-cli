@@ -8,13 +8,13 @@ import { RemoteDwnClient } from '../../lib/remote-dwn-client.js';
 
 export const cmd = new Command('dm');
 
-cmd.option('-t, --to [did]', 'the did you want to holler at.', );
+cmd.option('-t, --to [did]', 'the did you want to holler at.',);
 cmd.option('--c, --content [message]', 'what you want to say.');
 
 cmd.action(async () => {
   let { content, to } = cmd.opts();
   const questions = [];
-  
+
   if (!to) {
     questions.push(interactivePrompts.to);
   }
@@ -33,7 +33,7 @@ cmd.action(async () => {
   // TODO: check if thread with recipient already exists
   let thread;
   let threads = await Heyo.findThreads(DidLoader.getDid(), { recipient: to }, DidLoader.getSignatureMaterial());
-  
+
   if (threads.length > 0) {
     thread = threads[0];
   }
@@ -46,16 +46,15 @@ cmd.action(async () => {
 
   if (!thread) {
     thread = new Thread(to);
+    const { message: dWebMessage, data } = await thread.toDWebMessage(DidLoader.getSignatureMaterial());
 
-    const dWebMessage = await thread.toDWebMessage(DidLoader.getSignatureMaterial());
-    
-    let result = await RemoteDwnClient.send(dWebMessage, DidLoader.getDid());
+    let result = await RemoteDwnClient.send(dWebMessage, DidLoader.getDid(), data);
 
     if (result.status.code !== 202) {
       throw new Error(`failed to create thread. error: ${JSON.stringify(result)}`);
     }
-    
-    result = await RemoteDwnClient.send(dWebMessage, to);
+
+    result = await RemoteDwnClient.send(dWebMessage, to, data);
 
     if (result.status.code !== 202) {
       throw new Error(`failed to create thread. error: ${JSON.stringify(result)}`);
@@ -63,15 +62,15 @@ cmd.action(async () => {
   }
 
   const dm = new DM(content, thread.contextId);
-  const dWebMessage = await dm.toDWebMessage(DidLoader.getSignatureMaterial());
+  const { message: dWebMessage, data } = await dm.toDWebMessage(DidLoader.getSignatureMaterial());
 
-  let result = await RemoteDwnClient.send(dWebMessage, DidLoader.getDid());
+  let result = await RemoteDwnClient.send(dWebMessage, DidLoader.getDid(), data);
 
   if (result.status.code !== 202) {
     throw new Error(`failed to send DM. error: ${JSON.stringify(result)}`);
   }
 
-  result = await RemoteDwnClient.send(dWebMessage, to);
+  result = await RemoteDwnClient.send(dWebMessage, to, data);
 
   if (result.status.code !== 202) {
     throw new Error(`failed to send DM. error: ${JSON.stringify(result)}`);
@@ -80,14 +79,14 @@ cmd.action(async () => {
 
 const interactivePrompts = {
   to: {
-    type    : 'text',
-    name    : 'to',
-    message : 'who do you want to send the message to?',
-  
+    type: 'text',
+    name: 'to',
+    message: 'who do you want to send the message to?',
+
   },
   content: {
-    type    : 'text',
-    name    : 'content',
-    message : 'what do you want to say?',
+    type: 'text',
+    name: 'content',
+    message: 'what do you want to say?',
   }
 };

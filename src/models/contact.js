@@ -5,7 +5,7 @@ export class Contact {
   #did;
   #handle;
   #message;
-  
+
   constructor(did, handle) {
     this.#did = did;
     this.#handle = handle;
@@ -30,40 +30,40 @@ export class Contact {
   get dateCreated() {
     return this.#message.descriptor.dateCreated;
   }
-  
+
   async toDWebMessage(signatureInput) {
     if (this.#message) {
       return this.#message;
     }
-    
+
     const rawContact = {
-      did    : this.#did,
-      handle : this.#handle
+      did: this.#did,
+      handle: this.#handle
     };
 
     const dataStringified = JSON.stringify(rawContact);
     const dataBytes = new TextEncoder().encode(dataStringified);
-    
+
     const message = await RecordsWrite.create({
-      data                        : dataBytes, 
-      dataFormat                  : 'application/json',
-      schema                      : 'contact',
-      authorizationSignatureInput : signatureInput,
+      data: dataBytes,
+      dataFormat: 'application/json',
+      schema: 'contact',
+      authorizationSignatureInput: signatureInput,
     });
 
     this.#message = message.toJSON();
 
-    return this.#message;
+    return { message: this.#message, data: dataBytes };
   }
 
   static fromDWebMessage(message) {
     const { encodedData } = message;
-    
+
     const dataBytes = base64url.baseDecode(encodedData);
     const dataStringified = new TextDecoder().decode(dataBytes);
-    
+
     const { did, handle } = JSON.parse(dataStringified);
-    
+
     const contact = new Contact(did, handle);
     contact.#message = message;
 

@@ -1,23 +1,28 @@
 import { v4 as uuidv4 } from 'uuid';
 import { resolve } from '@decentralized-identity/ion-tools';
+import { base64url } from 'multiformats/bases/base64';
 
 export class RemoteDwnClient {
-  static async send(dWebMessage, target) {
+  static async send(dWebMessage, target, data) {
     const payload = {
-      jsonrpc : '2.0',
-      id      : uuidv4(),
-      method  : 'dwn.processMessage',
-      params  : {
+      jsonrpc: '2.0',
+      id: uuidv4(),
+      method: 'dwn.processMessage',
+      params: {
         message: dWebMessage,
         target
       }
     };
 
+    if (data) {
+      payload.params.data = base64url.baseEncode(data);
+    }
+
     const dwnHost = await RemoteDwnClient.getTargetDwnHost(target);
-    
+
     const resp = await fetch(dwnHost, {
-      method : 'POST',
-      body   : JSON.stringify(payload)
+      method: 'POST',
+      body: JSON.stringify(payload)
     });
 
     const { result, error } = await resp.json();
@@ -27,18 +32,18 @@ export class RemoteDwnClient {
 
   static async getTargetDwnHost(did) {
     const dwnHosts = [];
-    
+
     try {
       const { didDocument } = await resolve(did);
-  
+
       const { service = [] } = didDocument;
-  
+
       for (const svc of service) {
         if (svc.type === 'DecentralizedWebNode') {
           return svc.serviceEndpoint.nodes;
         }
       }
-  
+
       if (dwnHosts.length === 0) {
         throw new Error(`target ${did} does not have any DWNs listed in their DID Document`);
       }

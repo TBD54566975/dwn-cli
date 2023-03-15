@@ -10,27 +10,24 @@ if (fs.existsSync(config.did.storagePath)) {
   didState = JSON.parse(didStateJson);
 } else {
   if (config.did.method === 'ion') {
-
-
-
     const endpoints = [
-                    'https://dwn-usa-1.ue8cktdq71va0.us-east-2.cs.amazonlightsail.com/', 
-                    'https://dwn-aggregator.faktj7f1fndve.ap-southeast-2.cs.amazonlightsail.com/',
-                    'https://dwn-india.vtv94qck5sjvq.ap-south-1.cs.amazonlightsail.com/'
-                  ];
-                  
+      'https://dwn-usa-1.ue8cktdq71va0.us-east-2.cs.amazonlightsail.com/',
+      'https://dwn-aggregator.faktj7f1fndve.ap-southeast-2.cs.amazonlightsail.com/',
+      'https://dwn-india.vtv94qck5sjvq.ap-south-1.cs.amazonlightsail.com/'
+    ];
+
     const selectedEndpoints = async () => {
       let responseTimes = [];
-      
+
       // Pick 3 random endpoints
       let randomEndpoints = [];
-      while (randomEndpoints.length < 3) {
+      while (randomEndpoints.length < 1) {
         let randomIndex = Math.floor(Math.random() * endpoints.length);
         if (!randomEndpoints.includes(endpoints[randomIndex])) {
           randomEndpoints.push(endpoints[randomIndex]);
         }
       }
-      
+
       // Check the response time of each endpoint and make sure it returns 200 OK
       for (let endpoint of randomEndpoints) {
         let start = performance.now();
@@ -43,10 +40,10 @@ if (fs.existsSync(config.did.storagePath)) {
           });
         }
       }
-      
+
       // Sort the endpoints based on response time, fastest first
       responseTimes.sort((a, b) => a.responseTime - b.responseTime);
-      
+
       return responseTimes.map(rt => rt.endpoint);
     }
 
