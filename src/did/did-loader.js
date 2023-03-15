@@ -21,7 +21,7 @@ if (fs.existsSync(config.did.storagePath)) {
 
       // Pick 3 random endpoints
       let randomEndpoints = [];
-      while (randomEndpoints.length < 1) {
+      while (randomEndpoints.length < 3) {
         let randomIndex = Math.floor(Math.random() * endpoints.length);
         if (!randomEndpoints.includes(endpoints[randomIndex])) {
           randomEndpoints.push(endpoints[randomIndex]);
