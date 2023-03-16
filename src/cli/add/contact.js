@@ -14,7 +14,7 @@ cmd.option('-h, --handle [handle]', 'a friendly handle. Did\'s are long and ugly
 cmd.action(async () => {
   let { did, handle } = cmd.opts();
   const questions = [];
-  
+
   if (!did) {
     questions.push(interactivePrompts.did);
   }
@@ -31,9 +31,9 @@ cmd.action(async () => {
   }
 
   const contact = new Contact(did, handle);
-  const dWebMessage = await contact.toDWebMessage(DidLoader.getSignatureMaterial());
+  const { message: dWebMessage, data } = await contact.toDWebMessage(DidLoader.getSignatureMaterial());
 
-  const result = await RemoteDwnClient.send(dWebMessage, DidLoader.getDid());
+  const result = await RemoteDwnClient.send(dWebMessage, DidLoader.getDid(), data);
 
   if (result.status.code !== 202) {
     throw new Error('failed to add contact');
@@ -44,15 +44,15 @@ cmd.action(async () => {
 
 const interactivePrompts = {
   did: {
-    type    : 'text',
-    name    : 'did',
-    message : 'what\'s the contact\'s did?',
-  
+    type: 'text',
+    name: 'did',
+    message: 'what\'s the contact\'s did?',
+
   },
   handle: {
-    type    : 'text',
-    name    : 'handle',
-    message : 'provide a friendly handle. Did\'s are long and ugly',
+    type: 'text',
+    name: 'handle',
+    message: 'provide a friendly handle. Did\'s are long and ugly',
   }
 };
 
