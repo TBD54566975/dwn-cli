@@ -8,7 +8,7 @@
         "uuid": "9.0.0",
         "multiformats": "11.0.1",
         "prompts": "2.4.2",
-        "@decentralized-identity/ion-tools": "1.0.3",
+        "@decentralized-identity/ion-tools": "1.1.1",
         "@tbd54566975/dwn-sdk-js": "0.0.26"
     },
     "devDependencies": {
